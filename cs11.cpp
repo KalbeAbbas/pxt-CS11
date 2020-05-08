@@ -10,7 +10,6 @@ namespace cs11
 //%
 void _mkdir(String s)
 {
-
 }
 
 //%
@@ -32,9 +31,9 @@ bool _file(String s, String v, uint8_t x)
     fr = f_open(&Fil, (const char *)s->getUTF8Data(), x);
     if (fr == FR_OK)
     {
-        f_write(&Fil, (const char *)v->getUTF8Data(), v->getUTF8Size(), &bw);
+        f_write(&Fil, (const char *)s->getUTF8Data(), s->getUTF8Size(), &bw);
         fr = f_close(&Fil);
-        if (fr == FR_OK && bw == v->getUTF8Size())
+        if (fr == FR_OK && bw == s->getUTF8Size())
         {
             return true;
         }
@@ -48,11 +47,13 @@ uint32_t _size(String s)
 {
     FATFS FatFs;
     f_mount(&FatFs, "", 0);
+    uint32_t lSize = 0;
     FIL Fil;
-    UINT bw;
     FRESULT fr;
-    fr = f_open(&Fil, (const char *)s->getUTF8Data(), FA_WRITE);
-    return f_size(&Fil);
+    fr = f_open(&Fil, (const char *)s->getUTF8Data(), FA_READ | FA_WRITE);
+    lSize = f_size(&Fil);
+    f_close(&Fil);
+    return lSize;
 }
 
 //%

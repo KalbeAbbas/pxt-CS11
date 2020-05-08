@@ -3,8 +3,7 @@ namespace CS11 {
     let sdFlag=false
     //%block="CS11 size of file %u"
     //%u.defl="log.txt"
-    //%group="SD CARD"
-    export function sizeOfFile(u: string): number {
+    function sizeOfFile(u: string): number {
         if(sdFlag==false) {
             createFolder("CS11")
             sdFlag=true
@@ -14,7 +13,6 @@ namespace CS11 {
 
     //%block="CS11 remove file"
     //%u.defl="log.txt"
-    //%group="SD CARD"
     export function removeFile(u: string): void {
         if(sdFlag==false) {
             createFolder("CS11")
@@ -26,7 +24,6 @@ namespace CS11 {
 
     //%block="CS11 file %u exists"
     //%u.defl="log.txt"
-    //%group="SD CARD"
     export function fileExists(u: string): boolean {
         if(sdFlag==false) {
             createFolder("CS11")
@@ -37,7 +34,6 @@ namespace CS11 {
 
     //%block="CS11 overwrite file %u with %v"
     //%u.defl="log.txt"
-    //%group="SD CARD"
     export function overwriteFile(u: string, v: string): void {
         if(sdFlag==false) {
             createFolder("CS11")
@@ -49,7 +45,6 @@ namespace CS11 {
 
     //%block="CS11 append file %u with %v"
     //%u.defl="log.txt"
-    //%group="SD CARD"
     export function appendFile(u: string, v: string): void {
         if(sdFlag==false) {
             createFolder("CS11")
@@ -61,7 +56,6 @@ namespace CS11 {
 
     //%block="CS11 append file %u with line %v"
     //%u.defl="log.txt"
-    //%group="SD CARD"
     export function appendFileLine(u: string, v: string): void {
         if(sdFlag==false) {
             createFolder("CS11")
@@ -73,7 +67,6 @@ namespace CS11 {
 
     //%block="CS11 read file %u"
     //%u.defl="log.txt"
-    //%group="SD CARD"
     export function readFile(u: string): string {
         if(sdFlag==false) {
             createFolder("CS11")
