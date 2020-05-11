@@ -31,9 +31,9 @@ bool _file(String s, String v, uint8_t x)
     fr = f_open(&Fil, (const char *)s->getUTF8Data(), x);
     if (fr == FR_OK)
     {
-        f_write(&Fil, (const char *)s->getUTF8Data(), s->getUTF8Size(), &bw);
+        f_write(&Fil, (const char *)v->getUTF8Data(), v->getUTF8Size(), &bw);
         fr = f_close(&Fil);
-        if (fr == FR_OK && bw == s->getUTF8Size())
+        if (fr == FR_OK && bw == v->getUTF8Size())
         {
             return true;
         }
