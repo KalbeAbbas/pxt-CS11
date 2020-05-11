@@ -126,6 +126,7 @@ static DWORD ld_dword(const BYTE *ptr)
 	return rv;
 }
 
+#if !FF_FS_READONLY
 static void st_word(BYTE *ptr, WORD val)
 {
 	*ptr++ = (BYTE)val;
@@ -143,6 +144,9 @@ static void st_dword(BYTE *ptr, DWORD val)
 	val >>= 8;
 	*ptr++ = (BYTE)val;
 }
+
+#endif
+
 static void mem_cpy(void *dst, const void *src, UINT cnt)
 {
 	BYTE *d = (BYTE *)dst;
@@ -213,6 +217,7 @@ static int dbc_2nd(BYTE c)
 	return 0;
 }
 
+#if !FF_FS_READONLY
 static FRESULT sync_window(
 	FATFS *fs)
 {
@@ -236,6 +241,7 @@ static FRESULT sync_window(
 	}
 	return res;
 }
+#endif
 
 static FRESULT move_window(
 	FATFS *fs,
@@ -245,6 +251,9 @@ static FRESULT move_window(
 
 	if (sect != fs->winsect)
 	{
+#if !FF_FS_READONLY
+		res = sync_window(fs);
+#endif
 		if (res == FR_OK)
 		{
 			if (disk_read(fs->pdrv, fs->win, sect, 1) != RES_OK)
@@ -257,6 +266,8 @@ static FRESULT move_window(
 	}
 	return res;
 }
+
+#if !FF_FS_READONLY
 
 static FRESULT sync_fs(
 	FATFS *fs)
@@ -287,6 +298,8 @@ static FRESULT sync_fs(
 
 	return res;
 }
+
+#endif
 
 static LBA_t clst2sect(
 	FATFS *fs,
@@ -329,6 +342,8 @@ static DWORD get_fat(
 	return val;
 }
 
+#if !FF_FS_READONLY
+
 static FRESULT put_fat(
 	FATFS *fs,
 	DWORD clst,
@@ -357,6 +372,10 @@ static FRESULT put_fat(
 	}
 	return res;
 }
+
+#endif
+
+#if !FF_FS_READONLY
 
 static FRESULT remove_chain(
 	FFOBJID *obj,
@@ -489,6 +508,10 @@ static DWORD create_chain(
 
 	return ncl;
 }
+
+#endif
+
+#if !FF_FS_READONLY
 static FRESULT dir_clear(
 	FATFS *fs,
 	DWORD clst)
@@ -510,6 +533,7 @@ static FRESULT dir_clear(
 	}
 	return (n == fs->csize) ? FR_OK : FR_DISK_ERR;
 }
+#endif
 
 static FRESULT dir_sdi(
 	DIR *dp,
@@ -624,6 +648,8 @@ static FRESULT dir_next(
 	return FR_OK;
 }
 
+#if !FF_FS_READONLY
+
 static FRESULT dir_alloc(
 	DIR *dp,
 	UINT nent)
@@ -659,6 +685,8 @@ static FRESULT dir_alloc(
 	return res;
 }
 
+#endif
+
 static DWORD ld_clust(
 	FATFS *fs,
 	const BYTE *dir)
@@ -674,6 +702,7 @@ static DWORD ld_clust(
 	return cl;
 }
 
+#if !FF_FS_READONLY
 static void st_clust(
 	FATFS *fs,
 	BYTE *dir,
@@ -685,6 +714,9 @@ static void st_clust(
 		st_word(dir + DIR_FstClusHI, (WORD)(cl >> 16));
 	}
 }
+#endif
+
+#if FF_FS_MINIMIZE <= 1 || FF_FS_RPATH >= 2 || FF_USE_LABEL || FF_FS_EXFAT
 
 #define DIR_READ_FILE(dp) dir_read(dp, 0)
 #define DIR_READ_LABEL(dp) dir_read(dp, 1)
@@ -725,6 +757,8 @@ static FRESULT dir_read(
 	return res;
 }
 
+#endif
+
 static FRESULT dir_find(
 	DIR *dp)
 {
@@ -755,6 +789,8 @@ static FRESULT dir_find(
 	return res;
 }
 
+#if !FF_FS_READONLY
+
 static FRESULT dir_register(
 	DIR *dp)
 {
@@ -777,6 +813,10 @@ static FRESULT dir_register(
 	return res;
 }
 
+#endif
+
+#if !FF_FS_READONLY && FF_FS_MINIMIZE == 0
+
 static FRESULT dir_remove(
 	DIR *dp)
 {
@@ -792,6 +832,10 @@ static FRESULT dir_remove(
 
 	return res;
 }
+
+#endif
+
+#if FF_FS_MINIMIZE <= 1 || FF_FS_RPATH >= 2
 
 static void get_fileinfo(
 	DIR *dp,
@@ -823,6 +867,8 @@ static void get_fileinfo(
 	fno->ftime = ld_word(dp->dir + DIR_ModTime + 0);
 	fno->fdate = ld_word(dp->dir + DIR_ModTime + 2);
 }
+
+#endif
 
 static FRESULT create_name(
 	DIR *dp,
@@ -1154,17 +1200,27 @@ static FRESULT mount_volume(
 		}
 		if (fs->fsize < (szbfat + (SS(fs) - 1)) / SS(fs))
 			return FR_NO_FILESYSTEM;
+
+#if !FF_FS_READONLY
+
 		fs->last_clst = fs->free_clst = 0xFFFFFFFF;
 		fs->fsi_flag = 0x80;
+#if (FF_FS_NOFSINFO & 3) != 3
 		if (fmt == FS_FAT32 && ld_word(fs->win + BPB_FSInfo32) == 1 && move_window(fs, bsect + 1) == FR_OK)
 		{
 			fs->fsi_flag = 0;
 			if (ld_word(fs->win + BS_55AA) == 0xAA55 && ld_dword(fs->win + FSI_LeadSig) == 0x41615252 && ld_dword(fs->win + FSI_StrucSig) == 0x61417272)
 			{
+#if (FF_FS_NOFSINFO & 1) == 0
 				fs->free_clst = ld_dword(fs->win + FSI_Free_Count);
+#endif
+#if (FF_FS_NOFSINFO & 2) == 0
 				fs->last_clst = ld_dword(fs->win + FSI_Nxt_Free);
+#endif
 			}
 		}
+#endif
+#endif
 	}
 
 	fs->fs_type = (BYTE)fmt;
@@ -1230,9 +1286,11 @@ FRESULT f_open(
 	FRESULT res;
 	DIR dj;
 	FATFS *fs;
+#if !FF_FS_READONLY
 	DWORD cl, bcs, clst;
 	LBA_t sc;
 	FSIZE_t ofs;
+#endif
 	DEF_NAMBUF
 
 	if (!fp)
@@ -1335,6 +1393,7 @@ FRESULT f_open(
 			fp->err = 0;
 			fp->sect = 0;
 			fp->fptr = 0;
+#if !FF_FS_READONLY
 			if ((mode & FA_SEEKEND) && fp->obj.objsize > 0)
 			{
 				fp->fptr = fp->obj.objsize;
@@ -1362,6 +1421,7 @@ FRESULT f_open(
 					}
 				}
 			}
+#endif
 		}
 
 		FREE_NAMBUF();
@@ -1434,10 +1494,12 @@ FRESULT f_read(
 				}
 				if (disk_read(fs->pdrv, rbuff, sect, cc) != RES_OK)
 					ABORT(fs, FR_DISK_ERR);
+#if !FF_FS_READONLY && FF_FS_MINIMIZE <= 2
 				if (fs->wflag && fs->winsect - sect < cc)
 				{
 					mem_cpy(rbuff + ((fs->winsect - sect) * SS(fs)), fs->win, SS(fs));
 				}
+#endif
 				rcnt = SS(fs) * cc;
 				continue;
 			}
@@ -1453,6 +1515,8 @@ FRESULT f_read(
 
 	LEAVE_FF(fs, FR_OK);
 }
+
+#if !FF_FS_READONLY
 
 FRESULT f_write(
 	FIL *fp,
@@ -1526,11 +1590,13 @@ FRESULT f_write(
 				}
 				if (disk_write(fs->pdrv, wbuff, sect, cc) != RES_OK)
 					ABORT(fs, FR_DISK_ERR);
+#if FF_FS_MINIMIZE <= 2
 				if (fs->winsect - sect < cc)
 				{
 					mem_cpy(fs->win, wbuff + ((fs->winsect - sect) * SS(fs)), SS(fs));
 					fs->wflag = 0;
 				}
+#endif
 				wcnt = SS(fs) * cc;
 				continue;
 			}
@@ -1592,13 +1658,18 @@ FRESULT f_sync(
 	LEAVE_FF(fs, res);
 }
 
+#endif
+
 FRESULT f_close(
 	FIL *fp)
 {
 	FRESULT res;
 	FATFS *fs;
+
+#if !FF_FS_READONLY
 	res = f_sync(fp);
 	if (res == FR_OK)
+#endif
 	{
 		res = validate(&fp->obj, &fs);
 		if (res == FR_OK)
