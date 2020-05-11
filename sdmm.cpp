@@ -5,91 +5,67 @@
 
 void DO_INIT()
 {
-  auto er = getPin(PA16);
-  er->setDigitalValue(1);
   auto led = LOOKUP_PIN(MISO);
   led->setDigitalValue(0);
 }
 
 bool DO()
 {
-  auto er = getPin(PA16);
-  er->setDigitalValue(1);
   auto led = LOOKUP_PIN(MISO);
   return led->getDigitalValue();
 }
 
 void DI_INIT()
 {
-  auto er = getPin(PA16);
-  er->setDigitalValue(1);
   auto led = LOOKUP_PIN(MOSI);
   led->setDigitalValue(0);
 }
 
 void DI_H()
 {
-  auto er = getPin(PA16);
-  er->setDigitalValue(1);
   auto led = LOOKUP_PIN(MOSI);
   led->setDigitalValue(1);
 }
 void DI_L()
 {
-  auto er = getPin(PA16);
-  er->setDigitalValue(1);
   auto led = LOOKUP_PIN(MOSI);
   led->setDigitalValue(0);
 }
 
 void CK_INIT()
 {
-  auto er = getPin(PA16);
-  er->setDigitalValue(1);
   auto led = LOOKUP_PIN(SCK);
   led->setDigitalValue(0);
 }
 void CK_H()
 {
-  auto er = getPin(PA16);
-  er->setDigitalValue(1);
   auto led = LOOKUP_PIN(SCK);
   led->setDigitalValue(1);
 }
 void CK_L()
 {
-  auto er = getPin(PA16);
-  er->setDigitalValue(1);
   auto led = LOOKUP_PIN(SCK);
   led->setDigitalValue(0);
 }
 
 void CS_INIT()
 {
-  auto er = getPin(PA16);
-  er->setDigitalValue(1);
   auto led = getPin(PA09);
   led->setDigitalValue(0);
 }
 void CS_H()
 {
-  auto er = getPin(PA16);
-  er->setDigitalValue(1);
   auto led = getPin(PA09);
   led->setDigitalValue(1);
 }
 void CS_L()
 {
-  auto er = getPin(PA16);
-  er->setDigitalValue(1);
   auto led = getPin(PA09);
   led->setDigitalValue(0);
 }
 
 void dly_us(UINT n)
 {
-  auto er = getPin(PA16);
-  er->setDigitalValue(1);
   sleep_us(n);
 }
 
