@@ -136,45 +136,12 @@ FRESULT f_open(FIL *fp, const TCHAR *path, BYTE mode);
 FRESULT f_close(FIL *fp);
 FRESULT f_read(FIL *fp, void *buff, UINT btr, UINT *br);
 FRESULT f_write(FIL *fp, const void *buff, UINT btw, UINT *bw);
-FRESULT f_lseek(FIL *fp, FSIZE_t ofs);
-FRESULT f_truncate(FIL *fp);
 FRESULT f_sync(FIL *fp);
-FRESULT f_opendir(DIR *dp, const TCHAR *path);
-FRESULT f_closedir(DIR *dp);
-FRESULT f_readdir(DIR *dp, FILINFO *fno);
-FRESULT f_findfirst(DIR *dp, FILINFO *fno, const TCHAR *path, const TCHAR *pattern);
-FRESULT f_findnext(DIR *dp, FILINFO *fno);
-FRESULT f_mkdir(const TCHAR *path);
 FRESULT f_unlink(const TCHAR *path);
-FRESULT f_rename(const TCHAR *path_old, const TCHAR *path_new);
 FRESULT f_stat(const TCHAR *path, FILINFO *fno);
-FRESULT f_chmod(const TCHAR *path, BYTE attr, BYTE mask);
-FRESULT f_utime(const TCHAR *path, const FILINFO *fno);
-FRESULT f_chdir(const TCHAR *path);
-FRESULT f_chdrive(const TCHAR *path);
-FRESULT f_getcwd(TCHAR *buff, UINT len);
-FRESULT f_getfree(const TCHAR *path, DWORD *nclst, FATFS **fatfs);
-FRESULT f_getlabel(const TCHAR *path, TCHAR *label, DWORD *vsn);
-FRESULT f_setlabel(const TCHAR *label);
-FRESULT f_forward(FIL *fp, UINT (*func)(const BYTE *, UINT), UINT btf, UINT *bf);
-FRESULT f_expand(FIL *fp, FSIZE_t fsz, BYTE opt);
 FRESULT f_mount(FATFS *fs, const TCHAR *path, BYTE opt);
-FRESULT f_mkfs(const TCHAR *path, const MKFS_PARM *opt, void *work, UINT len);
-FRESULT f_fdisk(BYTE pdrv, const LBA_t ptbl[], void *work);
-FRESULT f_setcp(WORD cp);
-int f_putc(TCHAR c, FIL *fp);
-int f_puts(const TCHAR *str, FIL *cp);
-int f_printf(FIL *fp, const TCHAR *str, ...);
-TCHAR *f_gets(TCHAR *buff, int len, FIL *fp);
 
-#define f_eof(fp) ((int)((fp)->fptr == (fp)->obj.objsize))
-#define f_error(fp) ((fp)->err)
-#define f_tell(fp) ((fp)->fptr)
 #define f_size(fp) ((fp)->obj.objsize)
-#define f_rewind(fp) f_lseek((fp), 0)
-#define f_rewinddir(dp) f_readdir((dp), 0)
-#define f_rmdir(path) f_unlink(path)
-#define f_unmount(path) f_mount(0, path, 0)
 
 #define FA_READ 0x01
 #define FA_WRITE 0x02
