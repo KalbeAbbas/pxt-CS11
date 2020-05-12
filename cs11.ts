@@ -1,12 +1,13 @@
 //%color=#444444 icon="\uf07b"
 namespace CS11 {
-    let sdFlag=false
+    let sdFlag = false
     //%block="CS11 size of file %u"
     //%u.defl="log.txt"
     function sizeOfFile(u: string): number {
-        if(sdFlag==false) {
+        u = truncateStringLength(u)
+        if (sdFlag == false) {
             createFolder("CS11")
-            sdFlag=true
+            sdFlag = true
         }
         return size(u)
     }
@@ -14,9 +15,10 @@ namespace CS11 {
     //%block="CS11 remove file"
     //%u.defl="log.txt"
     export function removeFile(u: string): void {
-        if(sdFlag==false) {
+        u = truncateStringLength(u)
+        if (sdFlag == false) {
             createFolder("CS11")
-            sdFlag=true
+            sdFlag = true
         }
         remove(u)
         return
@@ -25,9 +27,10 @@ namespace CS11 {
     //%block="CS11 file %u exists"
     //%u.defl="log.txt"
     export function fileExists(u: string): boolean {
-        if(sdFlag==false) {
+        u = truncateStringLength(u)
+        if (sdFlag == false) {
             createFolder("CS11")
-            sdFlag=true
+            sdFlag = true
         }
         return exists(u)
     }
@@ -35,42 +38,46 @@ namespace CS11 {
     //%block="CS11 overwrite file %u with %v"
     //%u.defl="log.txt"
     export function overwriteFile(u: string, v: string): void {
-        if(sdFlag==false) {
+        u = truncateStringLength(u)
+        if (sdFlag == false) {
             createFolder("CS11")
-            sdFlag=true
+            sdFlag = true
         }
-        file(u, v, 0x02|0x08)
+        file(u, v, 0x02 | 0x08)
         return
     }
 
     //%block="CS11 append file %u with %v"
     //%u.defl="log.txt"
     export function appendFile(u: string, v: string): void {
-        if(sdFlag==false) {
+        u = truncateStringLength(u)
+        if (sdFlag == false) {
             createFolder("CS11")
-            sdFlag=true
+            sdFlag = true
         }
-        file(u, v, 0x02|0x30)
+        file(u, v, 0x02 | 0x30)
         return
     }
 
     //%block="CS11 append file %u with line %v"
     //%u.defl="log.txt"
     export function appendFileLine(u: string, v: string): void {
-        if(sdFlag==false) {
+        u = truncateStringLength(u)
+        if (sdFlag == false) {
             createFolder("CS11")
-            sdFlag=true
+            sdFlag = true
         }
-        file(u, v + "\n", 0x02|0x30)
+        file(u, v + "\n", 0x02 | 0x30)
         return
     }
 
     //%block="CS11 read file %u"
     //%u.defl="log.txt"
     export function readFile(u: string): string {
-        if(sdFlag==false) {
+        u = truncateStringLength(u)
+        if (sdFlag == false) {
             createFolder("CS11")
-            sdFlag=true
+            sdFlag = true
         }
         return file_read(u)
     }
@@ -109,5 +116,14 @@ namespace CS11 {
     //%shim=cs11::_read
     function file_read(u: string): string {
         return ""
+    }
+
+    function truncateStringLength(u: string): string {
+        let i = u.indexOf(".")
+        let ext = u.substr(i, u.length)
+        if (i > 8) {
+            u = u.substr(0, 8) + ext
+        }
+        return u
     }
 }

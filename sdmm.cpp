@@ -228,8 +228,6 @@ void deselect(void)
 
 static int select(void)
 {
-    auto er = getPin(PA16);
-  er->setDigitalValue(1);
   BYTE d;
 
   CS_L();
